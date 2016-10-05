@@ -25,6 +25,7 @@ integer, parameter  :: READ_UNIT  = 15
 character (len=200)   :: FILE_NAME
 integer :: loan_counter = 0, period_counter=0
 real     ( kind=dp) :: balance, years, rate, interest, payment
+real     ( kind=dp) :: total_interest=0, total_payment=0
 integer :: io
 
 !---------------------------------------------------------------------------------------
@@ -87,11 +88,13 @@ do while ( io == 0 )
 	! print header
 	write (*,*) "Period","Principal","Interest","Balance"
 
-	! principal is the initial balance
+	! initialize period counter and totals
+	period_counter = 0
+	total_payment = 0
+	total_interest = 0
 
-	! while the balance is greater than 0
-	! NOTE: loop will not terminate for some strange inputs like negative interest
-	do while (balance > 0)
+	! while it is not the last period
+	do while (period_counter < years*12)
 
 !---------------------------------------------------------------------------------------
 !  Update and print
@@ -104,11 +107,23 @@ do while ( io == 0 )
 		call update_values()
 
 		! if counter indicates 1st or last 12 periods
+		if ( period_counter <=12 .or. period_counter > (years-1)*12 ) then
 			! print period, payments towards principal and interest, balance
-			!write (*,'(f15.7)') something
+			write (*,*) period_counter, payment-interest, interest, balance
+			! after period 12, print a newline
+			if ( period_counter == 12 ) then
+				write (*,*)
+			end if
+		end if
 
 	! end loop through loan
 	enddo
+
+	! output total interest and payments
+	write (*,*)
+	write (*,*) "Total Interest: ", total_interest
+	write (*,*) "Total Payments: ", total_payment
+	write (*,*)
 
 	! read next line
 	read(READ_UNIT,*,iostat=io) balance, years, rate
@@ -140,6 +155,10 @@ interest = (rate/12)*balance
 balance = balance + interest
 ! subtract payment from balance
 balance = balance - payment
+
+!update totals
+total_payment = total_payment + payment
+total_interest = total_interest + interest
 
 end subroutine update_values
 
