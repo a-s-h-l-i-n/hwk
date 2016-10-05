@@ -19,31 +19,44 @@ implicit none
 !  Declare variables
 !---------------------------------------------------------------------------------------
 
+integer, parameter  :: dp = selected_real_kind(15,307)
+integer, parameter  :: WRITE_UNIT = 16
+integer, parameter  :: READ_UNIT  = 15
+character (len=200)   :: FILE_NAME
+integer :: loan_counter = 0, period_counter=0
+real     ( kind=dp) :: balance, years, rate, interest, payment
+integer :: i
+
 !---------------------------------------------------------------------------------------
 !  Get the file
 !---------------------------------------------------------------------------------------
 
 ! print prompt
+write (*,*) "Please enter the name of a loan terms file: "
 ! read file name from standard input
+read *,FILE_NAME
 ! echo file name
+write (*,*) "You entered ", FILE_NAME
 ! attempt to open file
+!open(unit=READ_UNIT, file=FILE_NAME)
 
 !---------------------------------------------------------------------------------------
 !  Check file for errors
 !---------------------------------------------------------------------------------------
 
-! if file does not exist, exit with error
 ! if file cannot be opened, exit with error
 
 !---------------------------------------------------------------------------------------
 !  Loop though file by line
 !---------------------------------------------------------------------------------------
 
-! initialize counter
-
 ! priming read
-
+!read(READ_UNIT,*) balance, years, rate
+balance = 100
+years = 30
+rate = 0.0001
 ! while there is a line
+!do while ()
 
 !---------------------------------------------------------------------------------------
 !  Check line for errors
@@ -57,9 +70,11 @@ implicit none
 !---------------------------------------------------------------------------------------
 
 	! increment and print counter value
+	period_counter = period_counter + 1
 	! echo principal, years, and rate
 
 	! function call to calculate monthly payment
+	i = monthly_payment()
 
 !---------------------------------------------------------------------------------------
 !  Loop through loan by month
@@ -78,46 +93,69 @@ implicit none
 		! increment period counter
 
 		! function call to update loan
+		call update_values()
 
 		! if counter indicates 1st of last 12 periods
 			! print periodi, payments towards principal and interest, balance
+			!write (*,'(f15.7)') something
 
 	! end loop through loan
 
 	! read next line
 
 ! end loop though file
+!enddo
 
-! close file
+close(READ_UNIT)
+close(WRITE_UNIT)
 
-! include statement
+contains
+
+!===  SUBROUTINE  ======================================================================
+!         NAME: update_values
+!  DESCRIPTION: This subroutine updates values associated with the loan each month.
+!
+!        INPUT:     rate - the yearly interest rate
+!       OUTPUT:  balance - the loan amount left to be paid
+!               interest - the interest accrued by the balance this month
+!=======================================================================================
+
+subroutine update_values()!update_values(rate, balance, interest)
+
+implicit none
+
+! calculate interest on balance
+interest = rate*balance
+! add interest to balance
+balance = balance + interest
+! subtract payment from balance
+balance = balance - payment
+
+end subroutine update_values
 
 !===  FUNCTION  ========================================================================
 !         NAME: monthly_payment
-!  DESCRIPTION: This program calculates the monthly payment for a loan.
+!  DESCRIPTION: This function calculates the monthly payment for a loan.
 !
-!        INPUT: p - the principal of the loan
-!               t - the time in years to pay the loan
+!        INPUT: n - the number of periods
+!               p - the principal of the loan
 !               r - the annual interest rate
+!               t - the time in years to pay the loan
 !       OUTPUT: monthly_payment
 !=======================================================================================
 
-! begin function
+integer function monthly_payment()
+!monthly_payment(n, p, r, t)
+
+implicit none
+
 ! calculate monthly payment using formula
-! end function
+!monthly_payment=rp/(1-(1+r)**(-n))
+monthly_payment = 4
 
-!===  SUBROUTINE  ======================================================================
-!         NAME: monthly_update
-!  DESCRIPTION: This program calculates the payment plan for a loan.
-!
-!        INPUT: rate - the yearly interest rate
-!       OUTPUT: balance - the loan amount left to be paid
-! interest - the interest accrued by the balance this month
-!=======================================================================================
+return
+end function monthly_payment
 
-! calculate interest on balance
-! add interest to balance
-! principal portion: subtract interest from payment, not its own variable
-! subtract payment from balance
-
+!===  END  =============================================================================
 end program hwkLoanCalculator
+
