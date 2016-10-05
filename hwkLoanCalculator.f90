@@ -62,13 +62,13 @@ do while ( io == 0 )
 
 	! increment and print counter value
 	loan_counter = loan_counter + 1
-	write (*,*) "Loan #", loan_counter
+	write (*,'(A6,I2)') "Loan #", loan_counter
 
 	! echo principal, years, and rate
 
-	write (*,*) "Initial Balance: $", balance
-	write (*,*) "   Years to Pay:  ", years
-	write (*,*) "  Interest Rate:  ", rate
+	write (*,'(A18,F12.2)') "Initial Balance: $", balance
+	write (*,'(A18,F12.1)') "   Years to Pay:  ", years
+	write (*,'(A18,F12.5,A1)') "  Interest Rate:  ", rate, '%'
 	write (*,*)
 
 	! convert rate from percentage to number
@@ -77,7 +77,7 @@ do while ( io == 0 )
 	! function call to calculate monthly payment
 	payment = monthly_payment(years, balance, rate)
 
-	write (*,*) "Monthly Payment: $", payment
+	write (*,'(A18,F12.2)') "Monthly Payment: $", payment
 	write (*,*)
 
 
@@ -86,7 +86,7 @@ do while ( io == 0 )
 !---------------------------------------------------------------------------------------
 
 	! print header
-	write (*,*) "Period","Principal","Interest","Balance"
+	write (*,'(A10,A20,A20,A20)') "Period","Principal","Interest","Balance"
 
 	! initialize period counter and totals
 	period_counter = 0
@@ -109,7 +109,7 @@ do while ( io == 0 )
 		! if counter indicates 1st or last 12 periods
 		if ( period_counter <=12 .or. period_counter > (years-1)*12 ) then
 			! print period, payments towards principal and interest, balance
-			write (*,*) period_counter, payment-interest, interest, balance
+			write (*,'(I10,F20.2,F20.2,F20.2)') period_counter, payment-interest, interest, balance
 			! after period 12, print a newline
 			if ( period_counter == 12 ) then
 				write (*,*)
@@ -121,8 +121,8 @@ do while ( io == 0 )
 
 	! output total interest and payments
 	write (*,*)
-	write (*,*) "Total Interest: ", total_interest
-	write (*,*) "Total Payments: ", total_payment
+	write (*,'(A16,F12.2)') "Total Interest: ", total_interest
+	write (*,'(A16,F12.2)') "Total Payments: ", total_payment
 	write (*,*)
 
 	! read next line
@@ -179,11 +179,7 @@ implicit none
 real (kind=dp) n,p,r 
 
 ! calculate monthly payment using formula
-write (*,*) n
-write (*,*) p
-write (*,*) r
 monthly_payment = (r/12)*p/(1-(1+(r/12))**(-n*12))
-write (*,*) monthly_payment
 
 return
 end function monthly_payment
